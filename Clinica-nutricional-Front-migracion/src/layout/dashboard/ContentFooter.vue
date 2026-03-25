@@ -1,6 +1,6 @@
 <template>
   <footer class="footer">
-    <p>© 2025 Nutricional</p>
+    <p>© 2026 Nutricional</p>
   </footer>
 </template>
 
