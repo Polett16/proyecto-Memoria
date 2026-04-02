@@ -9,6 +9,8 @@ import { RecoveryPasswordDto } from './dto/recovery-password.dto';
 import { MailManagerService } from '../mail-manager/mail-manager.service';
 import { newPasswordEmailTemplate } from 'src/shared/const/new_password_template.const';
 import { welcomeEmailTemplate } from 'src/shared/const/welcome_email_template.const';
+import { GetUsuarioByRutDto } from './dto/get-usuario-by-rut.dto';
+import { IsNull } from 'typeorm';
 
 @Injectable()
 export class UsuarioService {
@@ -201,5 +203,28 @@ export class UsuarioService {
     });
 
     return this.repository.save(updatedUsuario);
+  }
+
+    public async getUsuarioByRut(rut: number): Promise<GetUsuarioByRutDto> {
+    const usuario = await this.repository.findOne({
+      where: {
+        rut: rut,
+        fechaEliminacion: IsNull(),
+      },
+    });
+
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con rut ${rut} no encontrado`);
+    }
+
+    return {
+      id: usuario.id,
+      rut: usuario.rut,
+      nombre: usuario.nombre,
+      fechaNacimiento: usuario.fechaNacimiento,
+      telefono: Number(usuario.telefono),
+      correo: usuario.correo,
+      sexo: usuario.sexo,
+    };
   }
 }

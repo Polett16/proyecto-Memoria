@@ -8,6 +8,7 @@ import ForgotPasswordView from "@/pages/ForgotPassword/ForgotPasswordView.vue";
 import SeeUsersView from "../pages/SeeUsers/SeeUsersView.vue";
 import FichaClinica from "../components/FichaClinica.vue";
 import VerFichasClinicas from "../components/VerFichasClinicas.vue";
+import SeleccionarRol from "../components/SeleccionarRol.vue";
 import EvaluacionNutricional from "../components/EvaluacionNutricional.vue";
 import ListaPacientes from "../components/ListaPacientes.vue";
 import GestiondeUsuarios from "../components/GestiondeUsuarios.vue";
@@ -48,6 +49,7 @@ const routes = [
     component: RegisterView,
     meta: { requiresAuth: true, role: "Administrador" },
   },
+  
   {
     path: "/admin",
     component: DashboardLayout,
@@ -59,8 +61,13 @@ const routes = [
         component: Dashboard,
       },
       {
+        path: "seleccionar-rol",
+        name: "seleccionar-rol",
+        component: SeleccionarRol,
+      },
+      {
         path: "SeeUsers",
-        name: "SeeUsers",
+        name: "See Users",
         component: SeeUsersView,
       },
       {
@@ -70,7 +77,7 @@ const routes = [
       },
       {
         path: "/editar-plan/:id",
-        name: "EditarPlanNutricional",
+        name: "Editar Plan Nutricional",
         component: EditarPlan,
       },
       {
@@ -98,51 +105,52 @@ const routes = [
         name: "table-list",
         component: TableList,
       },
+     
       {
         path: "fichaclinica",
-        name: "fichaclinica",
+        name: "ficha clinica",
         component: FichaClinica,
         meta: { requiresAuth: false },
       },
       {
         path: "verfichasclinicas",
-        name: "verfichasclinicas",
+        name: "ver fichas clinicas",
         component: VerFichasClinicas,
         meta: { requiresAuth: false },
       },
       {
         path: "evaluacionNutricional",
-        name: "evaluacionNutricional",
+        name: "evaluacion Nutricional",
         component: EvaluacionNutricional,
         meta: { requiresAuth: false },
       },
       {
         path: "gestionusuarios",
-        name: "gestionusuarios",
+        name: "gestion usuarios",
         component: GestiondeUsuarios,
         meta: { requiresAuth: false },
       },
       {
         path: "gestionroles",
-        name: "gestionroles",
+        name: "gestion roles",
         component: GestiondeRoles,
         meta: { requiresAuth: false },
       },
       {
         path: "listaPacientes",
-        name: "listaPacientes",
+        name: "lista Pacientes",
         component: ListaPacientes,
         meta: { requiresAuth: false },
       },
       {
         path: "verplannutrional",
-        name: "verplannutrional",
+        name: "ver plan nutrional",
         component: VerPlanNutricional,
         meta: { requiresAuth: false },
       },
       {
         path: "ConsultarestadoFicha",
-        name: "ConsultarestadoFicha",
+        name: "Consultar estado Ficha",
         component: ConsultarEstadoFicha,
         meta: { requiresAuth: false },
       },

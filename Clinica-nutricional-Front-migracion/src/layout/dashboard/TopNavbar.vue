@@ -120,10 +120,8 @@ export default {
       this.showMenu = !this.showMenu;
     },
     logout() {
-      // Aquí eliminamos el token del localStorage
-      localStorage.removeItem("token");
-
-      // Redirigimos al login
+      console.log("=== LOGOUT LIMPIO ===");
+      localStorage.clear();
       this.$router.push("/login");
     },
   },

@@ -13,6 +13,9 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { RecoveryPasswordDto } from './dto/recovery-password.dto';
 import { ApiQuery } from '@nestjs/swagger';
+import { ParseIntPipe } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiOkResponse } from '@nestjs/swagger';
+import { GetUsuarioByRutDto } from './dto/get-usuario-by-rut.dto';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -48,4 +51,16 @@ export class UsuarioController {
   findOne(@Param('rut') rut: number) {
     return this.usuarioService.findUserByRut(rut);
   }
+
+  @Get('rut/:rut')
+  @ApiOperation({ summary: 'Obtener usuario por RUT' })
+  @ApiParam({ name: 'rut', example: 11111111 })
+  @ApiOkResponse({ type: GetUsuarioByRutDto })
+  public async getUsuarioByRut(
+    @Param('rut', ParseIntPipe) rut: number,
+  ): Promise<GetUsuarioByRutDto> {
+    return this.usuarioService.getUsuarioByRut(rut);
+  }
+
+
 }

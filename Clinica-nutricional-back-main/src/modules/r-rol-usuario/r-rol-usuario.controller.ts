@@ -5,7 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { RRolUsuarioService } from './r-rol-usuario.service';
 import { CreateRRolUsuarioDto } from './dto/create-r-rol-usuario.dto';
@@ -27,4 +27,11 @@ export class RRolUsuarioController {
   ) {
     return this.rRolUsuarioService.updateRRolUsuario(id, updateRRolUsuarioDto);
   }
+
+  @Get('usuario/:id/roles')
+public async getRolesByUsuarioId(
+  @Param('id', ParseIntPipe) id: number,
+) {
+  return this.rRolUsuarioService.getRolesByUsuarioId(id);
+}
 }

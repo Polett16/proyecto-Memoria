@@ -96,6 +96,24 @@ export default {
       return /^\d+$/.test(rut);
     },
 
+    async obtenerRolesUsuario(usuarioId, token) {
+      const resRoles = await axios.get(
+        `${process.env.VUE_APP_API_URL}/r-rol-usuario/usuario/${usuarioId}/roles`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("=== ROLES DEL USUARIO ===");
+      console.log(resRoles.data);
+      console.log("=== ARRAY DE ROLES ===");
+      console.log(resRoles.data.roles || []);
+
+      return resRoles.data.roles || [];
+    },
+
     async iniciarSesion() {
       if (!this.rut || !this.password) {
         alert("Debe ingresar todos los datos.");
@@ -119,13 +137,81 @@ export default {
         if (response.status === 201) {
           const token = response.data.jwt;
 
-          // Guardamos el token en localStorage
           localStorage.setItem("token", token);
 
-          // Redirigimos al usuario
-          this.$router.push("/admin/dashboard");
+          console.log("=== LOGIN OK ===");
+          console.log(response.data);
+
+          const resUsuario = await axios.get(
+            `${process.env.VUE_APP_API_URL}/usuario/rut/${parseInt(this.rut)}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          console.log("=== USUARIO ENCONTRADO POR RUT ===");
+          console.log(resUsuario.data);
+
+          const usuarioId = resUsuario.data.id;
+          console.log("=== ID USUARIO ===");
+          console.log(usuarioId);
+
+          const roles = await this.obtenerRolesUsuario(usuarioId, token);
+
+          console.log("=== ROLES FINALES ===");
+          console.log(roles);
+          console.log("=== CANTIDAD DE ROLES ===");
+          console.log(roles.length);
+
+          localStorage.setItem("usuario", JSON.stringify(resUsuario.data));
+          localStorage.setItem("usuarioId", String(usuarioId));
+          localStorage.setItem("roles", JSON.stringify(roles));
+
+          if (roles.length >= 2) {
+            console.log("=== USUARIO CON MULTIPLES ROLES ===");
+            console.log("Se redirige a selección de rol");
+
+            this.$router.push("/admin/seleccionar-rol");
+            return;
+          }
+
+          if (roles.length === 1) {
+            console.log("=== USUARIO CON UN SOLO ROL ===");
+            console.log("Rol único:", roles[0]);
+
+            localStorage.setItem("rolActivo", JSON.stringify(roles[0]));
+
+            console.log("=== ROL ACTIVO GUARDADO ===");
+            console.log(JSON.parse(localStorage.getItem("rolActivo")));
+
+            if (roles[0].nombre === "Nutricionista") {
+              this.$router.push("/admin/dashboard");
+              return;
+            }
+
+            if (roles[0].nombre === "Paciente") {
+              this.$router.push("/paciente/dashboard");
+              return;
+            }
+
+            if (roles[0].nombre === "Administrador") {
+              this.$router.push("/admin/dashboard");
+              return;
+            }
+
+            this.$router.push("/admin/dashboard");
+            return;
+          }
+
+          console.log("=== USUARIO SIN ROLES ===");
+          alert("El usuario no tiene roles asignados.");
         }
       } catch (error) {
+        console.error("=== ERROR EN LOGIN ===");
+        console.error(error);
+
         if (error.response) {
           alert(
             `Error: ${error.response.data.message || "Credenciales inválidas"}`

@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, IsNull } from 'typeorm';
+
 import { CreateRRolUsuarioDto } from './dto/create-r-rol-usuario.dto';
 import { UpdateRRolUsuarioDto } from './dto/update-r-rol-usuario.dto';
+import { GetRolesUsuarioDto } from './dto/get-usuario-con-roles.dto';
 import { RRolUsuario } from './entities/r-rol-usuario.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class RRolUsuarioService {
@@ -22,6 +24,7 @@ export class RRolUsuarioService {
       fkUsuario: {
         id: dto.fkUsuario_id,
       },
+      fechaEliminacion: null,
     });
 
     return this.repository.save(rRolUsuario);
@@ -47,9 +50,32 @@ export class RRolUsuarioService {
     }
 
     const updatedRRolUsuario = this.repository.merge(rRolUsuario, {
-      fechaEliminacion: fechaEliminacion,
+      fechaEliminacion,
     });
 
     return this.repository.save(updatedRRolUsuario);
+  }
+
+  public async getRolesByUsuarioId(
+    usuarioId: number,
+  ): Promise<GetRolesUsuarioDto> {
+    const registros = await this.repository.find({
+      where: {
+        fkUsuario: {
+          id: usuarioId,
+        },
+        fechaEliminacion: IsNull(),
+      },
+      relations: {
+        fkRol: true,
+      },
+    });
+
+    return {
+      roles: registros.map((registro) => ({
+        id: registro.fkRol.id,
+        nombre: registro.fkRol.rol,
+      })),
+    };
   }
 }

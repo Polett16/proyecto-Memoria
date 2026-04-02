@@ -22,7 +22,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  public async login(loginAuthDto: LoginAuthDto): Promise<{ jwt: string }> {
+  public async login(loginAuthDto: LoginAuthDto): Promise<{ jwt: string, id_us: number }> {
     try {
       const user: Usuario = await this.usuarioService.findUserForLogin(
         loginAuthDto.rut,
@@ -39,6 +39,7 @@ export class AuthService {
 
       return {
         jwt: token,
+        id_us: user.id,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {

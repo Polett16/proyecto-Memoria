@@ -505,11 +505,12 @@ export default {
 
           Swal.fire({ icon: 'success', title: 'Ficha actualizada correctamente', confirmButtonColor: '#b35fc3' });
         } else {
-          const resUsuario = await axios.post(`${process.env.VUE_APP_API_URL}/usuario`, {
-            ...usuarioPayload,
-            rRolUsuario: { fkRol_id: 2 },
-          });
-          const usuarioId = resUsuario.data.id;
+          // const resUsuario = await axios.post(`${process.env.VUE_APP_API_URL}/usuario`, {
+          //   ...usuarioPayload,
+          //   rRolUsuario: { fkRol_id: 2 },
+          // });
+          // const usuarioId = resUsuario.data.id;
+          const usuarioId = await this.obtenerOCrearUsuario(usuarioPayload, 2);
 
           const resAnamnesisSocial = await axios.post(`${process.env.VUE_APP_API_URL}/anamnesis-social`, {
             asisteCon: this.form.asisteCon,
@@ -578,6 +579,81 @@ export default {
         Swal.fire({ icon: 'error', title: 'Error al guardar la ficha', confirmButtonColor: '#b35fc3' });
       }
     },
+
+    limpiarRut(rut) {
+      return String(rut).replace(/\D/g, "");
+    },
+      async obtenerOCrearUsuario(usuarioPayload, fkRolId = 2) {
+      const rutLimpio = Number(this.limpiarRut(usuarioPayload.rut));
+
+      try {
+        const resUsuario = await axios.get(
+          `${process.env.VUE_APP_API_URL}/usuario/rut/${rutLimpio}`
+        );
+
+        console.log("=== USUARIO ENCONTRADO POR RUT ===");
+        console.log(resUsuario.data);
+
+        const usuarioId = resUsuario.data.id;
+
+        const resRoles = await axios.get(
+          `${process.env.VUE_APP_API_URL}/r-rol-usuario/usuario/${usuarioId}/roles`
+        );
+
+        console.log("=== ROLES ENCONTRADOS DEL USUARIO ===");
+        console.log(resRoles.data);
+
+        const roles = resRoles.data.roles || [];
+        const yaTieneRol = roles.some((rol) => Number(rol.id) === Number(fkRolId));
+
+        console.log("=== VALIDACION DE ROL ===");
+        console.log({
+          usuarioId,
+          rut: rutLimpio,
+          rolBuscado: fkRolId,
+          rolesEncontrados: roles,
+          yaTieneRol,
+        });
+
+        if (!yaTieneRol) {
+          const resNuevoRol = await axios.post(
+            `${process.env.VUE_APP_API_URL}/r-rol-usuario`,
+            {
+              fkUsuario_id: usuarioId,
+              fkRol_id: fkRolId,
+            }
+          );
+
+          console.log("=== ROL AGREGADO ===");
+          console.log(resNuevoRol.data);
+        } else {
+          console.log("=== NO SE AGREGA ROL ===");
+          console.log(`El usuario ${usuarioId} ya tiene el rol ${fkRolId}`);
+        }
+
+        return usuarioId;
+      } catch (error) {
+        if (error?.response?.status === 404) {
+          console.log("=== USUARIO NO EXISTE, SE CREA ===");
+
+          const resUsuarioNuevo = await axios.post(
+            `${process.env.VUE_APP_API_URL}/usuario`,
+            {
+              ...usuarioPayload,
+              rut: rutLimpio,
+              rRolUsuario: { fkRol_id: fkRolId },
+            }
+          );
+
+          console.log("=== USUARIO NUEVO CREADO ===");
+          console.log(resUsuarioNuevo.data);
+
+          return resUsuarioNuevo.data.id;
+        }
+
+        throw error;
+      }
+    }
   },
 };
 </script>

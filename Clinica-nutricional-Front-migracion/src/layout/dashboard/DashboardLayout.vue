@@ -89,21 +89,34 @@ export default {
     },
 
     getUserRole() {
-      const token = this.getToken();
-      if (!token) return null;
+    const rolActivo = localStorage.getItem("rolActivo");
 
-      const payload = token.split(".")[1];
-      const base = decodeURIComponent(
-        Array.prototype.map
-          .call(atob(payload), function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
+    if (!rolActivo) return null;
 
-      const parsed = JSON.parse(base);
-      return parsed.rols?.[0]?.rol || null;
-    },
+    const rol = JSON.parse(rolActivo);
+
+    console.log("=== ROL ACTIVO DESDE LOCALSTORAGE ===");
+    console.log(rol);
+
+    return rol.nombre;
+    }
+
+
+    // getUserRole() {
+    //   const token = this.getToken();
+    //   if (!token) return null;
+
+    //   const payload = token.split(".")[1];
+    //   const base = decodeURIComponent(
+    //     Array.prototype.map
+    //       .call(atob(payload), function (c) {
+    //         return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+    //       })
+    //       .join("")
+    //   );
+      //const parsed = JSON.parse(base);
+     // return parsed.rols?.[0]?.rol || null;
+   //},
   },
   computed: {
     userRole() {
