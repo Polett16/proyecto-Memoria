@@ -20,7 +20,7 @@ export class FileManagerController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File): Promise<{
+  uploadFile(@UploadedFile() file: any): Promise<{
     fileName: string;
   }> {
     return this.fileManagerService.uploadFile(file);

@@ -10,7 +10,7 @@ import * as path from 'path';
 
 @Injectable()
 export class FileManagerService {
-  public async uploadFile(file: Express.Multer.File): Promise<{
+  public async uploadFile(file: any): Promise<{
     fileName: string;
   }> {
     if (!file || !file.buffer || !file.originalname) {

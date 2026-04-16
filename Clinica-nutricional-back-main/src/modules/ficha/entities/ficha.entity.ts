@@ -81,10 +81,10 @@ export class Ficha {
 
   @OneToMany(
     () => PlanNutricional,
-    (planNutricional) => planNutricional.fkFicha,
+    (planNutricional: PlanNutricional) => planNutricional.fkFicha,
   )
   planesNutricionales: PlanNutricional[];
 
-  @OneToMany(() => Examen, (examan) => examan.fkFicha)
+  @OneToMany(() => Examen, (examan: Examen) => examan.fkFicha)
   examenes: Examen[];
 }
