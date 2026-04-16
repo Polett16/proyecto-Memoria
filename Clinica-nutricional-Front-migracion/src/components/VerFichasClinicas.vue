@@ -210,6 +210,7 @@
               }}
             </p>
           </div>
+          
           <!-- Antropometría -->
           <div
             class="detalle-section"
